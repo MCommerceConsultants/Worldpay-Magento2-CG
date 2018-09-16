@@ -15,15 +15,16 @@ define(
         'Magento_Checkout/js/model/error-processor',
         'Magento_Checkout/js/model/url-builder',
         'mage/storage',
-        'Magento_Checkout/js/model/full-screen-loader'
+        'Magento_Checkout/js/model/full-screen-loader',
+        'Sapient_Worldpay/js/model/country'
     ],
-    function (Component, $, quote, customer,validator, url, placeOrderAction, redirectOnSuccessAction,ko, setPaymentInformationAction, errorProcessor, urlBuilder, storage, fullScreenLoader) {
+    function (Component, $, quote, customer,validator, url, placeOrderAction, redirectOnSuccessAction,ko, setPaymentInformationAction, errorProcessor, urlBuilder, storage, fullScreenLoader, country) {
         'use strict';
         //Valid card number or not.
         var ccTypesArr = ko.observableArray([]);
         var filtersavedcardLists = ko.observableArray([]);
         var paymentService = false;
-        var billingAddressCountryId = quote.billingAddress._latestValue.countryId;
+        var billingAddressCountryId = ko.observable(country());
         $.validator.addMethod('worldpay-validate-number', function (value) {
             if (value) {
                 return evaluateRegex(value, "^[0-9]{12,20}$");
@@ -97,8 +98,8 @@ define(
                 if(!statusCheck){
                     return;
                 }
-                if (quote.billingAddress._latestValue == null) {
-                    return;
+                if (quote.billingAddress._latestValue !== null) {
+                    billingAddressCountryId(quote.billingAddress._latestValue.countryId);
                 }
                 var ccavailabletypes = this.getCcAvailableTypes();
                 var savedcardlists = window.checkoutConfig.payment.ccform.savedCardList;
@@ -106,8 +107,8 @@ define(
                 var filtercards = [];
                 var cckey,ccvalue;
                 var serviceUrl = urlBuilder.createUrl('/worldpay/payment/types', {});
-                 var payload = {
-                    countryId: quote.billingAddress._latestValue.countryId
+                var payload = {
+                    countryId: billingAddressCountryId()
                 };
 
                  fullScreenLoader.startLoader();
