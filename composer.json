@@ -1,5 +1,5 @@
 {
-   "name":"sapient/module-worldpay",
+   "name":"mcommerceconsultants/module-worldpay",
    "description":"Sapient WorldPay Payment Module",
    "type":"magento2-module",
    "require":{
@@ -16,7 +16,7 @@
          "registration.php"
       ],
       "psr-4":{
-         "Sapient\\Worldpay\\":""
+         "MCommerceConsultants\\Worldpay\\":""
       }
    }
 }
